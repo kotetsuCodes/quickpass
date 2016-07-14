@@ -35,27 +35,7 @@ function createWindow() {
 app.on('ready', () => {
   //createWindow()
   globalShortcut.register('ctrl+shift+g', () => {
-    console.log('ctrl+shift+g was pressed...')
-    
-    var http = require("http");
-        http.get({
-            host: 'www.sethcardoza.com',
-            path: '/api/rest/tools/random_password_generator/length:16/complexity:alphaNumSpecial'
-        }, function(response) {
-            // Continuously update stream with data
-            var body = ''
-            response.on('data', function(d) {
-                body += d
-            });
-            response.on('end', function() {
-
-                // Data reception is done, do whatever with it!
-                clipboard.writeText(body)
-            });
-        });
-
-    //clipboard.writeText('superSecretPassword')
-
+    clipboard.writeText(generatePassword(10))
   })
 });
 
@@ -78,3 +58,24 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+function generatePassword (len) {
+            var length = (len)?(len):(10);
+            var string = "abcdefghijklmnopqrstuvwxyz"; //to upper 
+            var numeric = '0123456789';
+            var punctuation = '!@#$%^&*()_+~|}{[]\:;?><,./-=';
+            var password = "";
+            var character = "";
+            while( password.length<length ) {
+                entity1 = Math.ceil(string.length * Math.random()*Math.random());
+                entity2 = Math.ceil(numeric.length * Math.random()*Math.random());
+                entity3 = Math.ceil(punctuation.length * Math.random()*Math.random());
+                hold = string.charAt( entity1 );
+                hold = (entity1%2==0)?(hold.toUpperCase()):(hold);
+                character += hold;
+                character += numeric.charAt( entity2 );
+                character += punctuation.charAt( entity3 );
+                password = character;
+            }
+            return password;
+        }
