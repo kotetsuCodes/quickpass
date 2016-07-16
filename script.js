@@ -2,12 +2,36 @@ const {remote} = require('electron');
 const {ipcRenderer} = require('electron');
 // Module to handle clipboard
 
-function toggleAutoPaste(checkBox) {
+var hotKeyField = document.getElementById('hotKey')
+hotKeyField.value = ipcRenderer.sendSync('gethotkey', 'requesting current hotkey');
+var lastValidHotKey = hotKeyField.value;
 
-    if(checkBox.checked) {
-        var msg = ipcRenderer.sendSync('enable-autopaste', 'Auto-Paste Enabled');
+
+
+function checkModifier (event) {
+    var hotkeyStr = '';
+
+    if(event.ctrlKey) {
+        hotkeyStr += 'ctrl+';
+    }
+    if(event.shiftKey) {
+        hotkeyStr += 'shift+';
+    }
+
+    if((event.ctrlKey || event.shiftKey) && /[a-zA-Z0-9]/.test(String.fromCharCode(event.keyCode))) {
+        hotkeyStr += String.fromCharCode(event.keyCode);
+
+        if(hotkeyStr !== lastValidHotKey) {
+            event.preventDefault();
+
+            hotKeyField.value = hotkeyStr;
+            lastValidHotKey = hotkeyStr;
+
+            //send message to electron
+            var msg = ipcRenderer.sendSync('sethotkey', hotkeyStr);    
+        }
     } else {
-        var msg = ipcRenderer.sendSync('disable-autopaste', 'Auto-Paste Disabled');
+        hotKeyField.value = lastValidHotKey;
     }
 }
 
@@ -21,7 +45,7 @@ function showNotification(parentElement, msg) {
 
     setTimeout(function() {
         notificationElement.parentNode.removeChild(notificationElement)
-     }, 3000)
+    }, 3000)
 }
 
 function insertAfter(newNode, referenceNode) {

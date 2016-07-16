@@ -12,30 +12,26 @@ let autoPaste = true
 let passwordLength = 8
 let tray = null
 let password = ''
+let currentHotKey = 'ctrl+shift+g'
 let robot = null
 
 if(process.platform !== 'win32') {
   robot = require('robotjs')
 }
 
-function createWindow() {
-  // Create the browser window.
-  win = new BrowserWindow({width: 800, height: 600});
+ipcMain.on('gethotkey', (event, arg) => {
+  event.returnValue = currentHotKey
+})
 
-  // and load the index.html of the app.
-  win.loadURL(`file://${__dirname}/index.html`);
+ipcMain.on('sethotkey', (event, arg) => {
+  currentHotKey = arg;
 
-  // Open the DevTools.
-  win.webContents.openDevTools();
+  globalShortcut.unregisterAll();
 
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null;
-  });
-}
+  registerShortcut(arg);
+
+  event.returnValue = 'HotKey Set Successfully!';
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -46,7 +42,12 @@ app.on('ready', () => {
   buildNewMenu(password)
 
   //createWindow()
-  globalShortcut.register('ctrl+shift+g', () => {
+  registerShortcut(currentHotKey)
+
+});
+
+function registerShortcut(hotkey) {
+  globalShortcut.register(hotkey, () => {
     password = generatePassword(passwordLength)
     buildNewMenu(password)
     insertPasswordIntoClipboard(password)
@@ -55,15 +56,16 @@ app.on('ready', () => {
       robot.keyTap('v', 'command')
       robot.keyTap('v', 'control')  
     }
-    
 
   })
-
-});
+}
 
 function buildNewMenu(password) {
 
   let menu = new Menu()
+
+  menu.append(new MenuItem({label: 'Change HotKey ', type: 'normal', click(){ createWindow() }}))
+
   if(robot) {
     menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
   }
@@ -71,8 +73,9 @@ function buildNewMenu(password) {
   menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
   menu.append(new MenuItem({type: 'separator'}))
   
-  if(password)
+  if(password) {
     menu.append(new MenuItem({type: 'normal', label: password, click() { insertPasswordIntoClipboard(password)}}))
+  }
 
   tray.setToolTip('QuickPass')
   tray.setContextMenu(menu)
@@ -98,6 +101,25 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+function createWindow() {
+  // Create the browser window.
+  win = new BrowserWindow({width: 800, height: 600});
+
+  // and load the index.html of the app.
+  win.loadURL(`file://${__dirname}/index.html`);
+
+  // Open the DevTools.
+  win.webContents.openDevTools();
+
+  // Emitted when the window is closed.
+  win.on('closed', () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    win = null;
+  });
+}
 
 function setPasswordLength(length) {
   passwordLength = length

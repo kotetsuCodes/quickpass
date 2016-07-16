@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Hello World!</title>
-  <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
   <h1>Settings</h1>
-  <label for="autoPaste">Auto-Paste:
-    <input id="autoPaste" name="autoPaste" type="checkbox" onchange="toggleAutoPaste(this)"/>
+  <hr/>
+  <div>
+  <label for="autoPaste">HotKey:
+    <input id="hotKey" type="text" name="hotKey" value="ctrl+shift+g" onkeydown="checkModifier(event)"/>
   </label>
+  </div>
+
+  <script type="text/javascript" src="script.js"></script>
 </body>
 </html>
