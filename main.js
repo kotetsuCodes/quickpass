@@ -3,7 +3,7 @@ const electron = require('electron');
 const {app, Menu, MenuItem, Tray, protocol, globalShortcut, clipboard} = electron;
 // Module to create native browser window.
 const {BrowserWindow} = electron;
-const robot = require("robotjs");
+//const robot = null//require("robotjs");
 const {ipcMain} = require('electron');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -12,6 +12,11 @@ let autoPaste = true
 let passwordLength = 8
 let tray = null
 let password = ''
+let robot = null
+
+if(process.platform !== 'win32') {
+  robot = require('robotjs')
+}
 
 function createWindow() {
   // Create the browser window.
@@ -46,7 +51,7 @@ app.on('ready', () => {
     buildNewMenu(password)
     insertPasswordIntoClipboard(password)
     
-    if(autoPaste) {
+    if(autoPaste && robot) {
       robot.keyTap('v', 'command')
       robot.keyTap('v', 'control')  
     }
@@ -59,7 +64,10 @@ app.on('ready', () => {
 function buildNewMenu(password) {
 
   let menu = new Menu()
-  menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
+  if(robot) {
+    menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
+  }
+
   menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
   menu.append(new MenuItem({type: 'separator'}))
   
