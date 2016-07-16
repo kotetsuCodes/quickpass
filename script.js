@@ -11,6 +11,8 @@ var lastValidHotKey = hotKeyField.value;
 function checkModifier (event) {
     var hotkeyStr = '';
 
+    event.preventDefault();
+    
     if(event.ctrlKey) {
         hotkeyStr += 'ctrl+';
     }
@@ -22,7 +24,6 @@ function checkModifier (event) {
         hotkeyStr += String.fromCharCode(event.keyCode);
 
         if(hotkeyStr !== lastValidHotKey) {
-            event.preventDefault();
 
             hotKeyField.value = hotkeyStr;
             lastValidHotKey = hotkeyStr;
