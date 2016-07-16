@@ -1,5 +1,8 @@
 {
-  "name"    : "QuickPass",
-  "version" : "0.1.0",
-  "main"    : "main.js"
+  "name": "QuickPass",
+  "version": "0.1.0",
+  "main": "main.js",
+  "devDependencies": {
+    "electron-rebuild": "^1.1.5"
+  }
 }

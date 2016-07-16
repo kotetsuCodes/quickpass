@@ -1,14 +1,17 @@
 const electron = require('electron');
 // Module to control application life.
-const {app, protocol, globalShortcut, clipboard} = electron;
+const {app, Menu, MenuItem, Tray, protocol, globalShortcut, clipboard} = electron;
 // Module to create native browser window.
 const {BrowserWindow} = electron;
-
-
-
+const robot = require("robotjs");
+const {ipcMain} = require('electron');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+let autoPaste = true
+let passwordLength = 8
+let tray = null
+let password = ''
 
 function createWindow() {
   // Create the browser window.
@@ -33,11 +36,40 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  tray = new Tray('quickpass.png') 
+
+  buildNewMenu(password)
+
   //createWindow()
   globalShortcut.register('ctrl+shift+g', () => {
-    clipboard.writeText(generatePassword(10))
+    password = generatePassword(passwordLength)
+    buildNewMenu(password)
+    insertPasswordIntoClipboard(password)
+    
+    if(autoPaste) {
+      robot.keyTap('v', 'command')
+      robot.keyTap('v', 'control')  
+    }
+    
+
   })
+
 });
+
+function buildNewMenu(password) {
+
+  let menu = new Menu()
+  menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
+  menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
+  menu.append(new MenuItem({type: 'separator'}))
+  
+  if(password)
+    menu.append(new MenuItem({type: 'normal', label: password, click() { insertPasswordIntoClipboard(password)}}))
+
+  tray.setToolTip('QuickPass')
+  tray.setContextMenu(menu)
+
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -58,6 +90,18 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+function setPasswordLength(length) {
+  passwordLength = length
+}
+
+function insertPasswordIntoClipboard(pass) {
+  clipboard.writeText(pass)
+}
+
+function toggleAutoPaste() {
+  autoPaste = !autoPaste
+}
 
 function generatePassword (len) {
             var length = (len)?(len):(10);
