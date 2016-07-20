@@ -13,11 +13,7 @@ let passwordLength = 8
 let tray = null
 let password = ''
 let currentHotKey = 'ctrl+shift+g'
-let robot = null
-
-if(process.platform !== 'win32') {
-  robot = require('robotjs')
-}
+let ospasta = require('ospasta')
 
 ipcMain.on('gethotkey', (event, arg) => {
   event.returnValue = currentHotKey
@@ -52,9 +48,8 @@ function registerShortcut(hotkey) {
     buildNewMenu(password)
     insertPasswordIntoClipboard(password)
     
-    if(autoPaste && robot) {
-      robot.keyTap('v', 'command')
-      robot.keyTap('v', 'control')  
+    if(autoPaste) {
+      ospasta.paste()
     }
 
   })
@@ -66,10 +61,7 @@ function buildNewMenu(password) {
 
   menu.append(new MenuItem({label: 'Change HotKey ', type: 'normal', click(){ createWindow() }}))
 
-  if(robot) {
-    menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
-  }
-
+  menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
   menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
   menu.append(new MenuItem({type: 'separator'}))
   
@@ -134,22 +126,22 @@ function toggleAutoPaste() {
 }
 
 function generatePassword (len) {
-            var length = (len)?(len):(10);
+  var length = (len)?(len):(10);
             var string = "abcdefghijklmnopqrstuvwxyz"; //to upper 
             var numeric = '0123456789';
             var punctuation = '!@#$%^&*()_+~|}{[]\:;?><,./-=';
             var password = "";
             var character = "";
             while( password.length<length ) {
-                entity1 = Math.ceil(string.length * Math.random()*Math.random());
-                entity2 = Math.ceil(numeric.length * Math.random()*Math.random());
-                entity3 = Math.ceil(punctuation.length * Math.random()*Math.random());
-                hold = string.charAt( entity1 );
-                hold = (entity1%2==0)?(hold.toUpperCase()):(hold);
-                character += hold;
-                character += numeric.charAt( entity2 );
-                character += punctuation.charAt( entity3 );
-                password = character;
+              entity1 = Math.ceil(string.length * Math.random()*Math.random());
+              entity2 = Math.ceil(numeric.length * Math.random()*Math.random());
+              entity3 = Math.ceil(punctuation.length * Math.random()*Math.random());
+              hold = string.charAt( entity1 );
+              hold = (entity1%2==0)?(hold.toUpperCase()):(hold);
+              character += hold;
+              character += numeric.charAt( entity2 );
+              character += punctuation.charAt( entity3 );
+              password = character;
             }
             return password;
-        }
+          }
