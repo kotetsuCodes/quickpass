@@ -36,7 +36,6 @@ app.on('ready', () => {
   tray = new Tray('quickpass.png') 
   buildNewMenu(password)
   registerShortcut(currentHotKey)
-
 });
 
 function registerShortcut(hotkey) {
