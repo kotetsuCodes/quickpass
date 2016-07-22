@@ -32,11 +32,9 @@ ipcMain.on('sethotkey', (event, arg) => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  app.dock.hide();
   tray = new Tray('quickpass.png') 
-
   buildNewMenu(password)
-
-  //createWindow()
   registerShortcut(currentHotKey)
 
 });
