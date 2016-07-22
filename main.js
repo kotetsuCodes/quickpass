@@ -21,10 +21,9 @@ ipcMain.on('gethotkey', (event, arg) => {
 
 ipcMain.on('sethotkey', (event, arg) => {
   currentHotKey = arg;
-
   globalShortcut.unregisterAll();
-
   registerShortcut(arg);
+  buildNewMenu(password);  
 
   event.returnValue = 'HotKey Set Successfully!';
 });
@@ -59,7 +58,7 @@ function buildNewMenu(password) {
 
   let menu = new Menu()
 
-  menu.append(new MenuItem({label: 'Change HotKey ', type: 'normal', click(){ createWindow() }}))
+  menu.append(new MenuItem({label: 'Change HotKey ('+ currentHotKey +')', type: 'normal', click(){ createWindow(); }}))
 
   menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
   menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
