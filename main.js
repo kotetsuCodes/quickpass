@@ -64,7 +64,8 @@ function buildNewMenu(password) {
   menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
   menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
   menu.append(new MenuItem({type: 'separator'}))
-  
+  menu.append(new MenuItem({type: 'normal', label: 'Quit', click() { app.quit() }}))
+  menu.append(new MenuItem({type: 'separator'}))
   if(password) {
     menu.append(new MenuItem({type: 'normal', label: password, click() { insertPasswordIntoClipboard(password)}}))
   }
@@ -78,9 +79,7 @@ function buildNewMenu(password) {
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  
 });
 
 app.on('activate', () => {
