@@ -1,0 +1,32 @@
+body {
+    font-family: 'Oxygen', sans-serif;
+    background-color: #628395;
+    color: #CFD9DF;
+}
+
+input {
+    font-family: 'Oxygen', sans-serif;
+}
+
+input[type="text"] {
+    border-radius: 3px;
+    border: none;
+    font-size: 1em;
+    padding: 9px 9px 9px;
+    background-color: #EBECED;
+}
+
+input:focus {
+    outline:none;
+}
+
+label {
+    display: inline-block;
+}
+
+hr {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}

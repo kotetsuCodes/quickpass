@@ -3,7 +3,16 @@ const {ipcRenderer} = require('electron');
 // Module to handle clipboard
 
 var hotKeyField = document.getElementById('hotKey')
-hotKeyField.value = ipcRenderer.sendSync('gethotkey', 'requesting current hotkey');
+var localStorageHotKey = window.localStorage.getItem('hotkey');
+if(localStorageHotKey) {
+    console.log('hotkey exists in local storage');
+    ipcRenderer.sendSync('sethotkey', localStorageHotKey);
+    hotKeyField.value = localStorageHotKey;
+} else {
+    console.log('hotkey does not exist in local storage')
+    hotKeyField.value = ipcRenderer.sendSync('gethotkey', 'requesting current hotkey');    
+}
+
 var lastValidHotKey = hotKeyField.value;
 
 
@@ -29,7 +38,8 @@ function checkModifier (event) {
             lastValidHotKey = hotkeyStr;
 
             //send message to electron
-            var msg = ipcRenderer.sendSync('sethotkey', hotkeyStr);    
+            var msg = ipcRenderer.sendSync('sethotkey', hotkeyStr);
+            window.localStorage.setItem('hotkey', hotkeyStr);    
         }
     } else {
         hotKeyField.value = lastValidHotKey;
