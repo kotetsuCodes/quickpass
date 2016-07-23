@@ -57,7 +57,7 @@ function buildNewMenu(password) {
 
   let menu = new Menu()
 
-  menu.append(new MenuItem({label: 'Change HotKey ('+ currentHotKey +')', type: 'normal', click(){ createWindow(); }}))
+  menu.append(new MenuItem({label: 'Change HotKey ('+ currentHotKey +')', type: 'normal', click(){ if(win == null) { createWindow(); } }}))
 
   menu.append(new MenuItem({label: 'Auto-Paste', type: 'checkbox', click(){ toggleAutoPaste() }, checked: autoPaste}))
   menu.append(new MenuItem({label: 'Password Length', submenu: [{label: '8', type: 'radio', checked: passwordLength == 8, click() { setPasswordLength(8) }}, {label: '12', type: 'radio', checked: passwordLength == 12, click() { setPasswordLength(12)}}]}))
@@ -99,7 +99,7 @@ function createWindow() {
   win.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 
   // Emitted when the window is closed.
   win.on('closed', () => {
