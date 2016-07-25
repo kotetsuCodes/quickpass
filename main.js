@@ -23,7 +23,7 @@ ipcMain.on('sethotkey', (event, arg) => {
   currentHotKey = arg;
   globalShortcut.unregisterAll();
   registerShortcut(arg);
-  buildNewMenu(password);  
+  buildNewMenu(password);
 
   event.returnValue = 'HotKey Set Successfully!';
 });
@@ -32,8 +32,12 @@ ipcMain.on('sethotkey', (event, arg) => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  app.dock.hide();
-  tray = new Tray('quickpass.png') 
+
+  if(process.platform == 'darwin') {
+    app.dock.hide();
+  }
+
+  tray = new Tray('quickpass.png')
   buildNewMenu(password)
   registerShortcut(currentHotKey)
 
@@ -45,7 +49,7 @@ function registerShortcut(hotkey) {
     password = generatePassword(passwordLength)
     buildNewMenu(password)
     insertPasswordIntoClipboard(password)
-    
+
     if(autoPaste) {
       ospasta.paste()
     }
@@ -77,7 +81,7 @@ function buildNewMenu(password) {
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  
+
 });
 
 app.on('activate', () => {
@@ -124,7 +128,7 @@ function toggleAutoPaste() {
 
 function generatePassword (len) {
   var length = (len)?(len):(10);
-            var string = "abcdefghijklmnopqrstuvwxyz"; //to upper 
+            var string = "abcdefghijklmnopqrstuvwxyz"; //to upper
             var numeric = '0123456789';
             var punctuation = '!@#$%^&*()_+~|}{[]\:;?><,./-=';
             var password = "";
